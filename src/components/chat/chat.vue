@@ -49,10 +49,13 @@
     components: {
       Scroll
     },
-    // updated () {
-    //   console.log('测试：测试：')
-    //   console.log(this.addList)
-    // },
+    updated () {
+      console.log('测试：测试：')
+      // console.log(this.addList)
+    },
+    mounted () {
+      this.getContact()
+    },
     computed: {
       ...mapGetters([ // 拿到info的状态
         'info',
@@ -60,6 +63,15 @@
       ])
     },
     methods: {
+      getContact () {
+        this.$http.get('http://localhost:8002/test/list').then(response => {
+          // success callback
+          this.chatList = response.body
+        }, response => {
+          // error callback
+          console.log('error')
+        })
+      },
       enterMessage () {
         console.log(12)
       },

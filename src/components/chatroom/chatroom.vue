@@ -125,20 +125,35 @@
       sendContent () {
         this.text = this.$refs.sTest.value
         if (this.text !== '') {
-          this.content.push({
-            askImg: require('../../assets/me/minion.png'),
-            askContent: this.text
-          })
 
-          setTimeout(() => {
+          this.$http.get('http://localhost:8002/test/ask',{params: {content:this.text}}).then(response => {
+          // success callback
+            this.content.push({
+              askImg: require('../../assets/me/minion.png'),
+              askContent: this.text
+            })
+
             this.content.push({
               replyImg: '',
-              replyContent: this.randomReply[Math.floor(Math.random() * 19)]
+              replyContent: response.bodyText
             })
             for (let i = 0; i < this.content.length; i++) { // 定义回复者的头像
               this.content[i].replyImg = this.info.imgurl
             }
-          }, 1000)
+          }, response => {
+            // error callback
+            console.log('error')
+          })
+
+          // setTimeout(() => {
+          //   this.content.push({
+          //     replyImg: '',
+          //     replyContent: this.randomReply[Math.floor(Math.random() * 19)]
+          //   })
+          //   for (let i = 0; i < this.content.length; i++) { // 定义回复者的头像
+          //     this.content[i].replyImg = this.info.imgurl
+          //   }
+          // }, 1000)
         }
         this.$refs.sTest.value = '' // 清空输入框的内容
       },
