@@ -50,8 +50,9 @@
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
-
   import {mapGetters} from 'vuex'
+  import SockJS from  'sockjs-client';
+  import Stomp from 'stompjs';
 
   export default {
     components: {
@@ -60,41 +61,8 @@
     data () {
       return {
         text: '', // 输入框的文字
-        randomReply: [
-          '你谁啊？',
-          '请你再说一遍！',
-          '想和我聊天？得先夸我！',
-          '我不知道你在讲什么。。。',
-          '不好意思，我不想和你说话。',
-          '先告诉我你是谁。',
-          '竖子不足以谋也！',
-          '我选择沉默',
-          '来吧，一起吹牛逼。。',
-          '我很困，不想聊天',
-          '别废话，先给我讲个笑话',
-          '你从哪里来',
-          '心情不好，最好别搭理我',
-          '等我忙完再回复你',
-          '敢问尊姓大名',
-          '近来可好？',
-          '看来你是想和我聊天',
-          '你是要请我吃饭吗？',
-          '先给我一个让我回复你的理由',
-          '哈哈哈'
-        ],
+        stompClient: '',
         content: [
-          // {
-          //   askImg: require('../../assets/me/minion.png'),
-          //   replyImg: '',
-          //   askContent: '你好',
-          //   replyContent: '谢谢'
-          // },
-          // {
-          //   askImg: require('../../assets/me/minion.png'),
-          //   replyImg: '',
-          //   askContent: '你是谁',
-          //   replyContent: '你猜啊'
-          // }
         ]
       }
     },
@@ -111,7 +79,11 @@
         this.scroll = new BScroll(this.$refs.wrapper, {
           click: true
         })
-      })
+      });
+      this.connection();
+    },
+    beforeDestroy () {
+      this.disconnect()
     },
     methods: {
       back () {
@@ -126,39 +98,50 @@
         this.text = this.$refs.sTest.value
         if (this.text !== '') {
 
-          this.$http.get('http://localhost:8002/test/ask',{params: {content:this.text}}).then(response => {
-          // success callback
+          this.$http.get('http://localhost:8080/test/ask',{params: {content:this.text}}).then(response => {
             this.content.push({
               askImg: require('../../assets/me/minion.png'),
               askContent: this.text
             })
 
             this.content.push({
-              replyImg: '',
+              replyImg: this.info.imgurl,
               replyContent: response.bodyText
             })
-            for (let i = 0; i < this.content.length; i++) { // 定义回复者的头像
-              this.content[i].replyImg = this.info.imgurl
-            }
           }, response => {
-            // error callback
             console.log('error')
           })
-
-          // setTimeout(() => {
-          //   this.content.push({
-          //     replyImg: '',
-          //     replyContent: this.randomReply[Math.floor(Math.random() * 19)]
-          //   })
-          //   for (let i = 0; i < this.content.length; i++) { // 定义回复者的头像
-          //     this.content[i].replyImg = this.info.imgurl
-          //   }
-          // }, 1000)
         }
         this.$refs.sTest.value = '' // 清空输入框的内容
       },
       clearContent () {
         this.content = []
+      },
+      connection () {
+        // 建立连接对象
+        let socket = new SockJS('http://localhost:8080/ws');
+        // 获取STOMP子协议的客户端对象
+        this.stompClient = Stomp.over(socket);
+        // 向服务器发起websocket连接
+        this.stompClient.connect({},() => {
+            this.stompClient.subscribe('/topic/callback', (msg) => { // 订阅服务端提供的某个topic
+                console.log('广播成功')
+                console.log(msg);  // msg.body存放的是服务端发送给我们的信息
+            });
+            this.stompClient.send("/v1/faq",
+                {},
+                JSON.stringify({ "name": "haiway" ,"message":this.text}),
+            )   //用户加入接口
+        }, (err) => {
+            // 连接发生错误时的处理函数
+            console.log('失败')
+            console.log(err);
+        });
+      },
+      disconnect () {
+        if(this.stompClient){
+          this.stompClient.disconnect();
+        }
       }
     }
   }

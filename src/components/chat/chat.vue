@@ -50,7 +50,7 @@
       Scroll
     },
     updated () {
-      console.log('测试：测试：')
+      //console.log('测试：测试：')
       // console.log(this.addList)
     },
     mounted () {
@@ -64,7 +64,7 @@
     },
     methods: {
       getContact () {
-        this.$http.get('http://localhost:8002/test/list').then(response => {
+        this.$http.get('http://localhost:8080/test/list').then(response => {
           // success callback
           this.chatList = response.body
         }, response => {
