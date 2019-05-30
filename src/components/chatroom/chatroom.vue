@@ -97,20 +97,29 @@
       sendContent () {
         this.text = this.$refs.sTest.value
         if (this.text !== '') {
-
-          this.$http.get('http://localhost:8080/test/ask',{params: {content:this.text}}).then(response => {
+          
             this.content.push({
               askImg: require('../../assets/me/minion.png'),
               askContent: this.text
-            })
+            });
+            this.stompClient.send("/v1/faq",
+              {},
+              JSON.stringify({ "name": "haiway" ,"message":this.text}),
+            );
 
-            this.content.push({
-              replyImg: this.info.imgurl,
-              replyContent: response.bodyText
-            })
-          }, response => {
-            console.log('error')
-          })
+          // this.$http.get('http://localhost:8080/test/ask',{params: {content:this.text}}).then(response => {
+          //   this.content.push({
+          //     askImg: require('../../assets/me/minion.png'),
+          //     askContent: this.text
+          //   })
+
+          //   this.content.push({
+          //     replyImg: this.info.imgurl,
+          //     replyContent: response.bodyText
+          //   })
+          // }, response => {
+          //   console.log('error')
+          // })
         }
         this.$refs.sTest.value = '' // 清空输入框的内容
       },
@@ -127,11 +136,15 @@
             this.stompClient.subscribe('/topic/callback', (msg) => { // 订阅服务端提供的某个topic
                 console.log('广播成功')
                 console.log(msg);  // msg.body存放的是服务端发送给我们的信息
+
+              let dataKS = JSON.parse(msg.body);
+console.log(dataKS);  
+                this.content.push({
+                  replyImg: this.info.imgurl,
+                  replyContent: dataKS.message
+                })
+
             });
-            this.stompClient.send("/v1/faq",
-                {},
-                JSON.stringify({ "name": "haiway" ,"message":this.text}),
-            )   //用户加入接口
         }, (err) => {
             // 连接发生错误时的处理函数
             console.log('失败')
