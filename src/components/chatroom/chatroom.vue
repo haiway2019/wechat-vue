@@ -62,6 +62,7 @@
       return {
         text: '', // 输入框的文字
         stompClient: '',
+        sessionId: '',
         content: [
         ]
       }
@@ -104,7 +105,7 @@
             });
             this.stompClient.send("/v1/faq",
               {},
-              JSON.stringify({ "name": "haiway" ,"message":this.text}),
+              JSON.stringify({"faqSessionId":this.faqSessionId,"name": "haiway" ,"message":this.text}),
             );
 
           // this.$http.get('http://localhost:8080/test/ask',{params: {content:this.text}}).then(response => {
@@ -138,6 +139,7 @@
                 console.log(msg);  // msg.body存放的是服务端发送给我们的信息
 
               let dataKS = JSON.parse(msg.body);
+              this.sessionId = dataKS.faqSessionId;
 console.log(dataKS);  
                 this.content.push({
                   replyImg: this.info.imgurl,
