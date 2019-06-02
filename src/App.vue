@@ -2,10 +2,7 @@
   <div id="app">
     <div>
       <div class="app-header">
-        <div class="title">微信</div>
-        <router-link tag="div" class="search" to="/search">
-          <img src="./assets/搜索.png" height="20" width="20">
-        </router-link>
+        <div class="title">智脑</div>
         <div class="plus" @click="logClick">
           <img src="./assets/加号.png" height="20" width="20">
         </div>
@@ -67,7 +64,7 @@ export default {
 <style>
 /*@import "./common/style.css"*/
 
-/* http://meyerweb.com/eric/tools/css/reset/ 
+/* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
 */
@@ -80,8 +77,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
   margin: 0;
@@ -92,7 +89,7 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
@@ -217,5 +214,5 @@ html, body {
   background: url('./assets/tab/我1.png') no-repeat center 8px;
   background-size: 16px 16px;
 }
-        
+
 </style>

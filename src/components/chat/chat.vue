@@ -3,11 +3,11 @@
     <scroll class="chat-wrapper" :data="chatList">
       <div>
         <ul>
-          <router-link 
-            to='/chatroom' 
-            tag="li" 
-            v-for="addinfo in this.addList" 
-            :key="addinfo.id" 
+          <router-link
+            to='/chatroom'
+            tag="li"
+            v-for="addinfo in this.addList"
+            :key="addinfo.id"
             class="item"
           >
             <div class="item-cell" @click="">
@@ -19,11 +19,11 @@
           </router-link>
         </ul>
         <ul>
-          <router-link 
-            to='/chatroom' 
-            tag="li" 
-            v-for="info in chatList" 
-            :key="info.id" 
+          <router-link
+            to='/chatroom'
+            tag="li"
+            v-for="info in chatList"
+            :key="info.id"
             class="item"
           >
             <div class="item-cell" @click="gotoChatroom(info)">
@@ -54,7 +54,7 @@
       // console.log(this.addList)
     },
     mounted () {
-      this.getContact()
+      // this.getContact()
     },
     computed: {
       ...mapGetters([ // 拿到info的状态
@@ -63,15 +63,15 @@
       ])
     },
     methods: {
-      getContact () {
-        this.$http.get('http://localhost:8080/test/list').then(response => {
-          // success callback
-          this.chatList = response.body
-        }, response => {
-          // error callback
-          console.log('error')
-        })
-      },
+      // getContact () {
+      //   this.$http.get('http://localhost:8080/test/list').then(response => {
+      //     // success callback
+      //     this.chatList = response.body
+      //   }, response => {
+      //     // error callback
+      //     console.log('error')
+      //   })
+      // },
       enterMessage () {
         console.log(12)
       },
@@ -89,7 +89,7 @@
       return {
         chatList: [
           {
-            dissname: '诸葛亮',
+            dissname: '小智',
             dissid: 'zhugeliang',
             phone: '18312345678',
             imgurl: 'http://static.bbs.9wee.com/attachment/forum/201306/07/210751qbp4p4c5yzhhbpym.jpg',
@@ -101,19 +101,7 @@
             time: '08:25'
           },
           {
-            dissname: '赵云',
-            dissid: 'zhaoyun',
-            phone: '18312345678',
-            imgurl: 'http://p5.so.qhimgs1.com/t0171807b9d0a9ac16b.jpg',
-            location: '蜀国',
-            album: 'http://src.zhigame.com/news/20130123/2013012310413268.jpg',
-            source: '通过扫一扫添加',
-            summary: '有2个未读消息',
-            unread: 2,
-            time: '12:36'
-          },
-          {
-            dissname: '司马懿',
+            dissname: '音乐鬼才',
             dissid: 'simayi',
             phone: '18312345678',
             imgurl: 'http://www.e3ol.com/biography/upfiles/2008/20089822301342545.jpg',
@@ -121,11 +109,11 @@
             album: 'http://src.zhigame.com/news/20130123/2013012310413268.jpg',
             source: '通过扫一扫添加',
             summary: '有3个未读消息',
-            unread: 3,
+            unread: 0,
             time: '昨天'
           },
           {
-            dissname: '华佗',
+            dissname: '智脑问答',
             dissid: 'huatuo',
             phone: '18312345678',
             imgurl: 'http://img1.gamedog.cn/2014/01/23/30-1401230942040.jpg',
@@ -133,7 +121,7 @@
             album: 'http://src.zhigame.com/news/20130123/2013012310413268.jpg',
             source: '通过扫一扫添加',
             summary: '有1个未读消息',
-            unread: 1,
+            unread: 0,
             time: '8月18日'
           }
         ],
@@ -163,7 +151,7 @@
   }
   .item-cell{
     position: relative;
-    border-bottom: 1px solid rgba(153,153,153,0.4); 
+    border-bottom: 1px solid rgba(153,153,153,0.4);
     height: 60px;
   }
   .img-unread{
@@ -207,7 +195,7 @@
     top: 10px;
     right: 10px;
     font-size: 12px;
-    color: rgba(153,153,153,0.8); 
+    color: rgba(153,153,153,0.8);
   }
-   
+
 </style>

@@ -15,7 +15,7 @@
         <div class="content-wrapper" ref="wrapper">
           <div class="content-text">
             <div class="content-top">
-              <p>————现在可以和我聊天了————</p>
+              <p>————有我小诸葛在，无所不知，请尽管问————</p>
             </div>
             <div class="content-body" ref="body">
               <ul class="inHtml" v-for="item in content">
@@ -25,7 +25,7 @@
                 </li>
                 <li class="reply" v-show="item.replyContent">
                   <img :src="item.replyImg" />
-                  <p>{{item.replyContent}}</p>
+                  <p v-html="item.replyContent"></p>
                 </li>
               </ul>
             </div>
@@ -34,9 +34,9 @@
       </div>
       <div class="bottom">
         <div class="send">
-          <input 
-            type="text" 
-            placeholder="请输入聊天内容" 
+          <input
+            type="text"
+            placeholder="请输入聊天内容"
             class="sText"
             ref="sTest"
           />
@@ -62,7 +62,6 @@
       return {
         text: '', // 输入框的文字
         stompClient: '',
-        sessionId: '',
         content: [
         ]
       }
@@ -88,24 +87,26 @@
     },
     methods: {
       back () {
+        sessionStorage.removeItem("faqSessionId");
         this.$router.back()   // 返回上一级
       },
       gotoUser (info) {
+        sessionStorage.removeItem("faqSessionId");
         this.$router.push({
           path: `/chatroom/user`
-        })
+        });
       },
       sendContent () {
         this.text = this.$refs.sTest.value
         if (this.text !== '') {
-          
             this.content.push({
               askImg: require('../../assets/me/minion.png'),
               askContent: this.text
             });
+            console.log("sessionId:"+sessionStorage.getItem("faqSessionId"));
             this.stompClient.send("/v1/faq",
               {},
-              JSON.stringify({"faqSessionId":this.faqSessionId,"name": "haiway" ,"message":this.text}),
+              JSON.stringify({"faqSessionId":sessionStorage.getItem("faqSessionId"),"name": "haiway" ,"message":this.text}),
             );
 
           // this.$http.get('http://localhost:8080/test/ask',{params: {content:this.text}}).then(response => {
@@ -134,13 +135,13 @@
         this.stompClient = Stomp.over(socket);
         // 向服务器发起websocket连接
         this.stompClient.connect({},() => {
-            this.stompClient.subscribe('/topic/callback', (msg) => { // 订阅服务端提供的某个topic
+          this.stompClient.subscribe('/topic/callback', (msg) => { // 订阅服务端提供的某个topic
                 console.log('广播成功')
-                console.log(msg);  // msg.body存放的是服务端发送给我们的信息
+                // console.log(msg);  // msg.body存放的是服务端发送给我们的信息
 
               let dataKS = JSON.parse(msg.body);
-              this.sessionId = dataKS.faqSessionId;
-console.log(dataKS);  
+              sessionStorage.setItem("faqSessionId",dataKS.faqSessionId);
+
                 this.content.push({
                   replyImg: this.info.imgurl,
                   replyContent: dataKS.message
@@ -156,6 +157,7 @@ console.log(dataKS);
       disconnect () {
         if(this.stompClient){
           this.stompClient.disconnect();
+          sessionStorage.removeItem("faqSessionId");
         }
       }
     }
