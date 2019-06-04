@@ -4,6 +4,24 @@
       <div>
         <ul>
           <router-link
+            to='/askroom'
+            tag="li"
+            v-for="info in defaultBoltList"
+            :key="info.id"
+            class="item"
+          >
+            <div class="item-cell" @click="gotoChatroom(info)">
+              <div class="img-unread">
+                <img class="item-img" :src="info.imgurl" height="40" width="40" /><span v-html="info.unread" v-show="info.unread"></span>
+              </div>
+              <h2 class="dissname" v-html="info.dissname"></h2>
+              <p class="summary" v-html="info.summary"></p>
+              <span class="item-time" v-html="info.time"></span>
+            </div>
+          </router-link>
+        </ul>
+        <ul>
+          <router-link
             to='/chatroom'
             tag="li"
             v-for="addinfo in this.addList"
@@ -111,9 +129,13 @@
             summary: '有3个未读消息',
             unread: 0,
             time: '昨天'
-          },
+          }
+          
+        ],
+        defaultBoltList : [
           {
             dissname: '智脑问答',
+            botId:'58474',
             dissid: 'huatuo',
             phone: '18312345678',
             imgurl: 'http://img1.gamedog.cn/2014/01/23/30-1401230942040.jpg',

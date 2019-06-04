@@ -6,7 +6,7 @@
           <img class="img" src="../../assets/返回.png" @click='clearContent' height="16" width="19" />
         </router-link>
         <span class="dissname">{{this.info.dissname}}</span>
-        <span class="logo" @click="gotoUser(info)">
+        <span class="logo">
           <img src="../../assets/我.png" height="28" width="28">
           <!-- <span class="icon-user"></span> -->
         </span>
@@ -15,7 +15,7 @@
         <div class="content-wrapper" ref="wrapper">
           <div class="content-text">
             <div class="content-top">
-              <p>————有我小诸葛在，无所不知，请尽管问————</p>
+              <p>————江湖百曉生，无所不知，请尽管问————</p>
             </div>
             <div class="content-body" ref="body">
               <ul class="inHtml" v-for="item in content">
@@ -39,6 +39,7 @@
             placeholder="请输入聊天内容"
             class="sText"
             ref="sTest"
+            @keyup.enter="sendContent"
           />
           <input type="button" class="btn" value="发送" @click="sendContent" />
         </div>
@@ -51,8 +52,6 @@
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll'
   import {mapGetters} from 'vuex'
-  import SockJS from  'sockjs-client';
-  import Stomp from 'stompjs';
 
   export default {
     components: {
@@ -72,27 +71,23 @@
       ])
     },
     created () {
-      this.connection();
+
     },
     mounted () {
+      console.log("ssss")
       this.$nextTick(() => {
         this.scroll = new BScroll(this.$refs.wrapper, {
           click: true
         })
       })
     },
-    beforeDestroy () {
-      this.disconnect()
-    },
     methods: {
       back () {
-        sessionStorage.removeItem("faqSessionId");
         this.$router.back()   // 返回上一级
       },
       gotoUser (info) {
-        sessionStorage.removeItem("faqSessionId");
         this.$router.push({
-          path: `/chatroom/user`
+          path: '/chatroom/user'
         });
       },
       sendContent () {
@@ -102,62 +97,20 @@
               askImg: require('../../assets/me/minion.png'),
               askContent: this.text
             });
-            console.log("sessionId:"+sessionStorage.getItem("faqSessionId"));
-            this.stompClient.send("/v1/faq",
-              {},
-              JSON.stringify({"faqSessionId":sessionStorage.getItem("faqSessionId"),"name": "haiway" ,"message":this.text}),
-            );
 
-          // this.$http.get('http://localhost:8080/test/ask',{params: {content:this.text}}).then(response => {
-          //   this.content.push({
-          //     askImg: require('../../assets/me/minion.png'),
-          //     askContent: this.text
-          //   })
-
-          //   this.content.push({
-          //     replyImg: this.info.imgurl,
-          //     replyContent: response.bodyText
-          //   })
-          // }, response => {
-          //   console.log('error')
-          // })
+          this.$http.get('http://localhost:8080/faq/ai',{params: {"name": "haiway" ,"message":this.text,"botId":this.info.botId}}).then(response => {
+            this.content.push({
+              replyImg: this.info.imgurl,
+              replyContent: response.bodyText
+            })
+          }, response => {
+            console.log('error')
+          })
         }
         this.$refs.sTest.value = '' // 清空输入框的内容
       },
       clearContent () {
         this.content = []
-      },
-      connection () {
-        // 建立连接对象
-        let socket = new SockJS('http://localhost:8080/ws');
-        // 获取STOMP子协议的客户端对象
-        this.stompClient = Stomp.over(socket);
-        // 向服务器发起websocket连接
-        this.stompClient.connect({},() => {
-          this.stompClient.subscribe('/topic/callback', (msg) => { // 订阅服务端提供的某个topic
-                console.log('广播成功')
-                // console.log(msg);  // msg.body存放的是服务端发送给我们的信息
-
-              let dataKS = JSON.parse(msg.body);
-              sessionStorage.setItem("faqSessionId",dataKS.faqSessionId);
-
-                this.content.push({
-                  replyImg: this.info.imgurl,
-                  replyContent: dataKS.message
-                })
-
-            });
-        }, (err) => {
-            // 连接发生错误时的处理函数
-            console.log('失败')
-            console.log(err);
-        });
-      },
-      disconnect () {
-        if(this.stompClient){
-          this.stompClient.disconnect();
-          sessionStorage.removeItem("faqSessionId");
-        }
       }
     }
   }

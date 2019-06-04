@@ -5,6 +5,7 @@ import Address from '../components/address/address'
 import Find from '../components/find/find'
 import Me from '../components/me/me'
 import Chatroom from '../components/chatroom/chatroom'
+import Askroom from '../components/askroom/askroom'
 import Search from '../components/search/search'
 import AddressDetail from '../components/address/address-detail/address-detail'
 import FriendCircle from '../components/find/friend-circle/friend-circle'
@@ -39,6 +40,10 @@ export default new Router({
           component: ChatroomUser
         }
       ]
+    },
+    {
+      path: '/askroom',  // 聊天打字界面
+      component: Askroom
     },
     {
       path: '/chat',  // 第一栏：微信
